@@ -7,6 +7,7 @@ using namespace std;
 
 int jils(const vector<int>& A, const vector<int>& B, vector<vector<int>>& cache, int a, int b);
 void printCache(vector<vector<int>>& cache);
+int smallest = numeric_limits<int>::min();
 
 int main(void)
 {
@@ -22,24 +23,9 @@ int main(void)
             cin >> A[i];
         for (int i=0; i<m; i++)
             cin >> B[i];
-        vector<vector<int>> cache(n, vector<int>(m, -1));
-        // cache[n-1][m-1] = (A[n-1] != B[m-1]) ? 2 : 1;
-        jils(A,B,cache,0,0);
-        for (int i=0; i<n; i++)
-            for (int j=0; j<m; j++)
-            {
-                // if (cache[i][j] == -1)
-                jils(A,B,cache, i, j);
-            }
-        int result = 0;
-
-        for (int i=0; i<n; i++)
-            for (int j=0; j<m; j++)
-            {
-                if (result < cache[i][j])
-                    result = cache[i][j];
-            }
-        printCache(cache);
+        vector<vector<int>> cache(n+1, vector<int>(m+1, -1));
+        int result = jils(A,B,cache, -1, -1);
+        // printCache(cache);
         cout << result << endl;
     }
 }
@@ -57,42 +43,29 @@ void printCache(vector<vector<int>>& cache)
 int jils(const vector<int>& A, const vector<int>& B, vector<vector<int>>& cache, int a, int b)
 {
     // printCache(cache);
-    int& ret = cache[a][b];
+    int& ret = cache[a+1][b+1];
     if (ret != -1)
     {
         return ret;
     }
-    int valueA = A[a];
-    int valueB = B[b];
+    long long valueA = (a == -1) ? smallest : A[a];
+    long long valueB = (b == -1) ? smallest : B[b];
     int max_ele = max(valueA, valueB);
-    int longestA = (valueA != valueB) ? 2 : 1;
-    int k = 0;
+    int longest = 0;
     for (int i=a+1; i<A.size(); i++)
     {
         if (A[i] > max_ele)
         {
-            k=1;
-            int temp = jils(A,B,cache, i, b);
-            if (longestA < temp)
-            {
-                longestA = temp;
-            }
+            longest = max(longest, jils(A,B,cache, i,b)+1);
         }
     }
-    int longestB = (valueA != valueB) ? 2 : 1;
     for (int i=b+1; i<B.size(); i++)
     {
         if (B[i] > max_ele)
         {
-            k=1;
-            int temp = jils(A,B,cache, a, i);
-            if (longestB < temp)
-            {
-                longestB = temp;
-            }
+            longest = max(longest, jils(A,B,cache,a,i)+1);
         }
     }
-    // int k = (valueA != valueB) ? 1 : 0;
-    ret = (longestA > longestB) ? longestA+k : longestB+k;
+    ret = longest;
     return ret;
 }
