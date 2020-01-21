@@ -7,7 +7,7 @@
   * C++ STL에서 정적배열은 array, 동적배열은 vector
   * vector의 경우 append, resize 등의 연산을 지원
   * capacity를 통해 append할때마다 배열 전체를 복사하지 않아도 됨
-
+    * capacity에 size가 도달할 경우 capacity를 두배로 늘림 -> append의 시간복잡도가 평균적으로 O(1)이 된다.
         
 ### List
 * 원소들이 포인터로 서로 연결됨
