@@ -4,8 +4,8 @@
 
 using namespace std;
 
-int next_signal(const int& a);
-bool isK(const int& k, int& before_num, int& end_num, int& sum);
+int next_signal(unsigned int& a);
+bool isK(const int& k, unsigned int& start_num, unsigned int& start_sig, unsigned int& end_num, unsigned int& end_sig, int& sum);
 
 int main(void)
 {
@@ -14,57 +14,50 @@ int main(void)
     while(n_test--)
     {
         int k, n;
-        int a = 1983;
-        int b = next_signal(a);
-        int c = next_signal(b);
-        int d = next_signal(c);
-        cout << b%10000 + 1 << " " << c%10000+1 << " " << d%10000+1 << endl;
-    //     cin >> k >> n;
-    //     int count = 0;
-    //     int sum = 1984;
-    //     int start_num = 1984;
-    //     int end_num;
-    //     while (sum < k)
-    //     {
-    //         end_num = next_signal(end_num);
-    //         sum += end_num;
-    //     }
-    //     if (sum == k)
-    //         count++;
-    //     if (sum > k)
-    //         sum -= end_num;
-    //     for (int i=0; i<n-1; i++)
-    //     {
-    //         if(isK(k, start_num, end_num, sum))
-    //             count++;
-    //     }
-    //     cout << count << endl;
+        cin >> k >> n;
+        int count = 0;
+        int sum = 1984;
+        unsigned int start_num = 1983;
+        unsigned int start_sig = 1984;
+        unsigned int end_num = 1983;
+        unsigned int end_sig;
+        while (sum < k)
+        {
+            end_sig = next_signal(end_num);
+            sum += end_sig;
+        }
+        if (sum == k)
+            count++;
+
+        for (int i=0; i<n-1; i++)
+        {
+            if(isK(k, start_num, start_sig, end_num, end_sig, sum))
+                count++;
+        }
+        cout << count << endl;
     }
     return 0;
 }
 
-bool isK(const int& k, int& before_num, int& end_num, int& sum)
+bool isK(const int& k, unsigned int& start_num, unsigned int& start_sig, unsigned int& end_num, unsigned int& end_sig, int& sum)
 {
-    cout << "before_num : " << before_num << endl;
-    cout << "end_num : " << end_num << endl;
-    cout << "sum is " << sum << endl;
-    int start_num = next_signal(before_num);
-    sum -= before_num;
-    before_num = start_num;
+    unsigned int new_start_sig = next_signal(start_num);
+    sum -= start_sig;
+    start_sig = new_start_sig;
     while (sum < k)
     {
-        end_num = next_signal(end_num);
-        sum += end_num;
+        end_sig = next_signal(end_num);
+        sum += end_sig;
     }
     if (sum == k)
         return true;
 
-    sum -= end_num;
     return false;
 }
 
-int next_signal(const int& a)
+int next_signal(unsigned int& a)
 {
-    int result = a * 214013 + 2531011;
+    a = a * 214013 + 2531011;
+    int result = a % 10000 + 1;
     return result;
 }
