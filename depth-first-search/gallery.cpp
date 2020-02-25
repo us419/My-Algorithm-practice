@@ -3,18 +3,33 @@
 
 using namespace std;
 
-void set_camera(vector<vector<int>>& graph, vector<int>& degree, vector<int>& colored, vector<int>& dominated, int here)
+vector<int> adj[1000];
+vector<bool> visited;
+
+const int INSTALLED = 0;
+const int WATCHED = 1;
+const int UNWATCHED = 2;
+
+int installed = 0;
+
+int dfs(int here)
 {
-    if (degree[here] == 1)
-        return;
-    int g = degree.size();
-    for (int i=0; i<g; i++)
+    visited[here] = 1;
+    int children[3] = {0,0,0};
+    for (int i=0; i<adj[here].size(); i++)
     {
-        if (graph[here][i] && !dominated[i])
-        {
-            colored[here] = 1;
-        }
+        int there = adj[here][i];
+        if (!visited[there])
+            children[dfs(there)]++;
     }
+    if (children[UNWATCHED])
+    {
+        installed++;
+        return INSTALLED;
+    }
+    if (children[INSTALLED])
+        return WATCHED;
+    return UNWATCHED;
 }
 
 int main(void)
@@ -23,21 +38,25 @@ int main(void)
     cin >> n_test;
     while (n_test--)
     {
+        installed = 0;
         int g, h;
         cin >> g >> h;
+        visited = vector<bool>(g,0);
+        for (int i=0; i<1000; i++)
+            adj[i].clear();
         int a,b;
-        vector<vector<int>> graph(g, vector<int>(g,0));
-        vector<int> degree(g,0);
-        vector<int> colored(g,0);
-        vector<int> dominated(g,0);
         for (int i=0; i<h; i++)
         {
             cin >> a >> b;
-            graph[a][b] = 1;
-            graph[b][a] = 1;
-            degree[a]++;
-            degree[b]++;
+            adj[a].push_back(b);
+            adj[b].push_back(a);
         }
+        for (int i=0; i<g; i++)
+        {
+            if (!visited[i] && dfs(i) == UNWATCHED)
+                installed++;
+        }
+        cout << installed << endl;
     }
     return 0;
 }
